@@ -1,0 +1,4 @@
+﻿  FileActionLogger.cpp
+C:\Users\Matthew\Desktop\COMP6841\Project\FileActionLogger\FileActionLogger\FileActionLogger.cpp(13,1): warning C4326: return type of 'wmain' should be 'int' instead of 'void'
+C:\Users\Matthew\Desktop\COMP6841\Project\FileActionLogger\FileActionLogger\FileActionLogger.cpp(88,10): warning C4101: 'm_Buffer': unreferenced local variable
+  FileActionLogger.vcxproj -> C:\Users\Matthew\Desktop\COMP6841\Project\FileActionLogger\Debug\FileActionLogger.exe
