@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <ctime>
 
 void WatchDirectory(LPTSTR);
 
@@ -35,26 +36,45 @@ DWORD processDirectoryChanges(const char* buffer)
             fni->FileNameLength / sizeof(WCHAR),
             fileName, sizeof(fileName), NULL, NULL);
 
+        time_t rawtime;
+        tm timeinfo;
+        char currentTime[80];
+        time(&rawtime);
+        localtime_s(&timeinfo, &rawtime);
+        strftime(currentTime, sizeof(currentTime), "%d-%m-%Y %H:%M:%S", &timeinfo);
+        std::string strCurrentTime(currentTime);
+
+        // Logging file creates infinite loop
+        /*char loggedLine[200];
+        std::ofstream outfile;
+        outfile.open("FileActionLog.txt", std::ios::app);
+        if (!outfile.is_open()) ExitProcess(GetLastError());*/
+
         switch (fni->Action) {
         case FILE_ACTION_ADDED: {
-            std::cout << "Added file " << fileName << std::endl;
+            std::cout << strCurrentTime << ": " << "Added file " << fileName << std::endl;
+            //outfile << strCurrentTime << ": " << "Added file " << fileName << std::endl;
             break;
         } case FILE_ACTION_REMOVED: {
-            std::cout << "Removed file " << fileName << std::endl;
+            std::cout << strCurrentTime << ": " << "Removed file " << fileName << std::endl;
+            //outfile << strCurrentTime << ": " << "Removed file " << fileName << std::endl;
             break;
         } case FILE_ACTION_MODIFIED: {
-            std::cout << "Modified file " << fileName << std::endl;
+            std::cout << strCurrentTime << ": " << "Modified file " << fileName << std::endl;
+            //outfile << strCurrentTime << ": " << "Modified file " << fileName << std::endl;
             break;
         } case FILE_ACTION_RENAMED_OLD_NAME: {
-            std::cout << "The file was renamed and the old file name is " << fileName << std::endl;
+            std::cout << strCurrentTime << ": " << "The file was renamed and the old file name is " << fileName << std::endl;
+            //outfile << strCurrentTime << ": " << "The file was renamed and the old file name is " << fileName << std::endl;
             break;
         } case FILE_ACTION_RENAMED_NEW_NAME: {
-            std::cout << "The file was renamed and the new file name is " << fileName << std::endl;
+            std::cout << strCurrentTime << ": " << "The file was renamed and the new file name is " << fileName << std::endl;
+            //outfile << strCurrentTime << ": " << "The file was renamed and the new file name is " << fileName << std::endl;
             break;
         } default:
             break;
         }
-
+        //outfile.close();
         memset(fileName, '\0', sizeof(fileName));
         offset += fni->NextEntryOffset;
 
@@ -85,7 +105,6 @@ void WatchDirectory(LPTSTR lpDir)
         ExitProcess(GetLastError());
     }
 
-    BYTE m_Buffer[1024];
 
     OVERLAPPED ovl = { 0 };
     ovl.hEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
